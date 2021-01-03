@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Nanyang Polyclinic - Shopping Cart{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Shopping Cart</h1>
+<a href="/checkout" class="btn btn-warning">Checkout</a>
+<form action="{{url_for('clear_cart')}}" method="POST">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_" style="text-align-right">
+      Clear Cart
+    </button>
+
+    <!-- The Modal -->
+    <div class="modal" id="myModal_">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Clear Confirmation</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            Are you sure you want to clear the cart?
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <input type="submit" value="Clear" class="btn btn-danger">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+          </form>
+
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Item ID</th>
+        <th>Picture</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Bio</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in items_list %}
+      <tr>
+        <td>{{ item.get_item_id() }}</td>
+        <td><img src="{{ item.get_item_picture() }}" height="100"></td>
+        <td>{{ item.get_item_name() }}</td>
+        <td>${{ item.get_item_price() }}</td>
+        <td>{{ item.get_item_want() }}</td>
+        <td>{{ item.get_item_bio() }}</td>
+        <td>${{ item.get_total_price() }}</td>
+        <td><a href="/purchaseItem/{{item.get_item_id()}}" class="btn btn-warning">Change Qty</a></td>
+        <td>
+          <form action="{{url_for('remove_item', id=item.get_item_id())}}" method="POST">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{item.get_item_id()}}">
+      Remove
+    </button>
+
+                <!-- The Modal -->
+    <div class="modal" id="myModal_{{item.get_item_id()}}">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Remove Confirmation</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            Are you sure you want to remove {{item.get_item_name()}} from cart?
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <input type="submit" value="Remove" class="btn btn-danger">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+{% endblock %}
