@@ -1,8 +1,26 @@
+import shelve
+
+
 class Item:
-    id = 0
+    db = shelve.open('storage.db', 'r')
+    last_id = db['Item_ID']
+    db.close()
+    id = last_id
 
     def __init__(self, name, price, have, bio, picture):
         Item.id += 1
+        last_id = 0
+        db = shelve.open('storage.db', 'c')
+
+        try:
+            last_id = db['Item_ID']
+        except:
+            print("Error in retrieving Items from storage.db.")
+
+        last_id = Item.id
+        db['Item_ID'] = last_id
+        db.close()
+
         self.__item_id = Item.id
         self.__item_name = name
         self.__item_price = price
@@ -10,6 +28,7 @@ class Item:
         self.__item_want = 0
         self.__item_bio = bio
         self.__item_picture = picture
+        self.__item_tag = []
 
     def get_item_id(self):
         return self.__item_id
@@ -39,10 +58,7 @@ class Item:
         return self.__item_want
 
     def set_item_want(self, want):
-        if want <= self.get_item_have():
-            self.__item_want = want
-        else:
-            print("We do not have enough stock at the moment! ")
+        self.__item_want = want
 
     def get_item_bio(self):
         return self.__item_bio
@@ -56,18 +72,18 @@ class Item:
     def set_item_picture(self, picture):
         self.__item_picture = picture
 
+    def get_item_tag(self):
+        return self.__item_tag
+
+    def set_item_tag(self, tag):
+        self.__item_tag = tag
+
+    def add_item_tag(self, tag):
+        self.set_item_tag(self.get_item_tag().append(tag))
+
     def get_total_price(self):
         return self.get_item_price() * self.get_item_want()
 
-    def buy_item(self):
-        s = self.get_item_have() - self.get_item_want()
-        self.set_item_have(s)
-        self.set_item_want(0)
-
-    def __str__(self):
-        s = "{} costs ${} with a bio {} and picture {}".format(self.get_item_name(), self.get_item_price(),
-                                                               self.get_item_bio(), self.get_item_picture())
-        return s
 
 
 class Prescribed(Item):

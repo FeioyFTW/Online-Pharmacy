@@ -2,72 +2,66 @@
 {% block title %}Nanyang Polyclinic - Pharmacy{% endblock %}
 
 {% block content %}
+{% from "includes/_formHelper.html" import render_field %}
 
-<h2 class="test">Pharmacy</h2>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="not-enough-stock-container">
+        <li class="not-enough-stock-msg">Not enough stock at the moment, try again later</li>
+    </ul>
+  {% endif %}
+{% endwith %}
 
-<div>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Item ID</th>
-        <th>Picture</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Amount in Stock</th>
-        <th>Bio</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for item in items_list %}
-      <tr>
-        <td>{{ item.get_item_id() }}</td>
-        <td><img src="{{ item.get_item_picture() }}" height="100"></td>
-        <td>{{ item.get_item_name() }}</td>
-        <td>${{ item.get_item_price() }}</td>
-        <td>{{ item.get_item_have() }}</td>
-        <td>{{ item.get_item_bio() }}</td>
-        {% if item.get_item_want() == 0 %}
-          <td><a href="/purchaseItem/{{item.get_item_id()}}" class="btn btn-warning">Buy</a></td>
-        {% else %}
-          <td><a href="/shoppingCart" class="btn btn-warning">{{ item.get_item_want() }} Added to Cart</a></td>
-        {% endif %}
-        <td>
-          <form action="{{url_for('delete_item', id=item.get_item_id())}}" method="POST">
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{item.get_item_id()}}">
-      Delete
+
+<div class="search-container">
+  <div class="dropdown">
+    <button class="dropbtn"><img class="hamburger-button"src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.ebGKXSBc3rwmT8BoF7c1hAHaHa%26pid%3DApi&f=1"></button>
+    <div class="dropdown-content">
+      <a href="/pharmacy/hot">Hot Sellers</a>
+      <a href="/pharmacy/limited">Limited Stock</a>
+      <a href="/pharmacy/new">New</a>
+    </div>
+  </div>
+  <form class="search-form" method="post">
+    {{ render_field(form.search, class="search-bar") }}
+    <button type="submit">
+      <i class="fa fa-search" style="font-size: 23px;"></i>
     </button>
+  </form>
+      <a href="/shoppingCart" class="cart-button">
+        <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvectorified.com%2Fimages%2Fshopping-cart-icon-transparent-20.png&f=1&nofb=1" height="35px">
+      </a>
+  <a class="create-button" href="/createItem"> + </a>
+  <a class="inventory-button" href="/inventory"> i </a>
+</div>
 
-    <!-- The Modal -->
-    <div class="modal" id="myModal_{{item.get_item_id()}}">
-      <div class="modal-dialog">
-        <div class="modal-content">
-
-          <!-- Modal Header -->
-          <div class="modal-header">
-            <h4 class="modal-title">Delete Confirmation</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-          </div>
-
-          <!-- Modal body -->
-          <div class="modal-body">
-            Are you sure you want to delete {{item.get_item_name()}}?
-          </div>
-
-          <!-- Modal footer -->
-          <div class="modal-footer">
-            <input type="submit" value="Delete" class="btn btn-danger">
-           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          </div>
-
-        </div>
+<div class="pharma-container">
+  {% for item in items_list %}
+  <div class="pharma-item-container">
+    <div class="pharma-item-picture-container">
+      <img class="pharma-item-picture" src="{{ item.get_item_picture() }}">
+    </div>
+    <div class="pharma-text-container">
+      <div class="pharma-item-name-container">
+        <p class="pharma-item-name">{{ item.get_item_name() }}</p>
+      </div>
+      <div class="pharma-item-price-container">
+        <p class="pharma-item-price">${{ item.get_item_price() }}</p>
+      </div>
+      <div class="pharma-item-have-container">
+        {% if item.get_item_have() <= 10 %}
+          <p class="pharma-item-have-low">Stock Left: {{ item.get_item_have() }}</p>
+        {% else %}
+          <p class="pharma-item-have-high">Stock Left: {{ item.get_item_have() }}</p>
+        {% endif %}
+      </div>
+      <div class="pharma-add-to-cart-container">
+        <a class="pharma-add-to-cart-button" href="/purchaseItem/{{ item.get_item_id() }}/">Add to Cart</a>
       </div>
     </div>
-
-
-          </form>
-        </td>
-      </tr>
-    {% endfor %}
+  </div>
+{% endfor %}
+</div>
 {% endblock %}
+
+
